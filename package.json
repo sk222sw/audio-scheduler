@@ -2,14 +2,21 @@
   "name": "audio-scheduler",
   "version": "0.0.1",
   "description": "Accurate timing for audio et al",
-  "main": "index.ts",
+  "main": "index.js",
   "scripts": {
     "start": "microbundle",
     "watch": "microbundle watch",
     "build": "microbundle build"
   },
-  "keywords": [],
-  "author": "Sonny Kjellberg",
+  "keywords": ["web audio api", "audio", "music", "accurate", "scheduling"],
+  "author": {
+    "name": "Sonny Kjellberg",
+    "url": "https://github.com/sk222sw"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sk222sw/audio-scheduler.git"
+  },
   "license": "ISC",
   "devDependencies": {
     "microbundle": "^0.4.4",
