@@ -40,3 +40,5 @@ scheduler.startInterval(synth)
 ### push(newInterval: number): void
 ### shift(): void
 ### pop(): void
+### pause(): void
+### unpause(): void
