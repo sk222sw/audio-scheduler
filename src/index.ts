@@ -26,6 +26,8 @@ export class AudioScheduler {
   private intervalList: number[] = [];
   private intervalTime: number;
   private callback: Function;
+  private hasStarted = false;
+  private isPaused = false;
 
   constructor(options: AudioSchedulerOptions) {
     this.mode = options.infinite ? ScheduleMode.Infinite : ScheduleMode.Finite;
@@ -38,7 +40,10 @@ export class AudioScheduler {
     this.context = options.context || new AudioContext();
   }
 
-  _init() {
+  _init(cb: Function) {
+    if (!this.callback)
+      this.callback = cb;
+    
     this.msTempo = 60000 / this.tempo;
     this.intervalList = this.initialIntervals;
   }
@@ -84,10 +89,15 @@ export class AudioScheduler {
   }
 
   startInterval(cb: Function) {
-    if (!this.callback)
-      this.callback = cb;
-    
-    this._init();
+    if (this.hasStarted && !this.isPaused)
+      throw new Error(`Can't start scheduler while it's running.`);
+    else
+      this.hasStarted = true;
+
+    if (!this.isPaused)
+      this._init(cb);
+      
+    this.isPaused = false;
 
     this._runCallback(this.context.currentTime, cb);
 
@@ -101,6 +111,7 @@ export class AudioScheduler {
   }
 
   stopInterval(interval) {
+    this.hasStarted = false;
     clearInterval(interval);
   }
 
@@ -129,10 +140,11 @@ export class AudioScheduler {
   }
   pause() {
     this.stopInterval(this.setIntervalReference);
-    this.context.suspend();
+    this.isPaused = true;
   }
   unpause() {
-    this.context.resume()
+    if (!this.hasStarted)
+      throw new Error("Can't unpause a scheduler that hasn't started.")
     this.setIntervalReference = this.startInterval(this.callback)
   }
 }
