@@ -25,6 +25,7 @@ export class AudioScheduler {
   private lastIntervalStartedAt: number;
   private intervalList: number[] = [];
   private intervalTime: number;
+  private callback: Function;
 
   constructor(options: AudioSchedulerOptions) {
     this.mode = options.infinite ? ScheduleMode.Infinite : ScheduleMode.Finite;
@@ -83,6 +84,9 @@ export class AudioScheduler {
   }
 
   startInterval(cb: Function) {
+    if (!this.callback)
+      this.callback = cb;
+    
     this._init();
 
     this._runCallback(this.context.currentTime, cb);
@@ -122,5 +126,13 @@ export class AudioScheduler {
     const initialIntervals = [...this.initialIntervals];
     initialIntervals.pop();
     this.initialIntervals = initialIntervals;
+  }
+  pause() {
+    this.stopInterval(this.setIntervalReference);
+    this.context.suspend();
+  }
+  unpause() {
+    this.context.resume()
+    this.setIntervalReference = this.startInterval(this.callback)
   }
 }
